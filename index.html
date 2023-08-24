@@ -2,85 +2,83 @@
 <html>
 <head>
   <title>IronChat</title>
-  <style>
-     {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #181818;
-    }
-    
-    .chat-container {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #1c1c1c;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-      overflow: hidden;
-    }
-    
-    .chat-header {
-      padding: 15px;
-      background-color: #2d2d2d;
-      color: #fff;
-      font-size: 20px;
-      font-weight: bold;
-      text-align: center;
-    }
-    
-    .chat-messages {
-      padding: 15px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    
-    .chat-message {
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    
-    .user-message {
-      background-color: #00bfff;
-      color: #fff;
-      float: right;
-    }
-    
-    .other-message {
-      background-color: #ff4500;
-      color: #fff;
-      float: left;
-    }
-    
-    .chat-input {
-      display: flex;
-      align-items: center;
-      padding: 15px;
-      background-color: #2d2d2d;
-    }
-    
-    #input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      margin-right: 10px;
-    }
-    
-    #send-button {
-      background-color: #00bfff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
-  </style>
+  <style>{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #181818;
+  }
+  
+  .chat-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #1c1c1c;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+  }
+  
+  .chat-header {
+    padding: 15px;
+    background-color: #2d2d2d;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .chat-messages {
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .chat-message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  .user-message {
+    background-color: #00bfff;
+    color: #fff;
+    float: right;
+  }
+  
+  .other-message {
+    background-color: #ff4500;
+    color: #fff;
+    float: left;
+  }
+  
+  .chat-input {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background-color: #2d2d2d;
+  }
+  
+  #input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+  
+  #send-button {
+    background-color: #00bfff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }</style>
 </head>
 <body>
   <div class="chat-container">
@@ -95,23 +93,35 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
+    const emojiMap = {
+      'react': '💫',
+      'woah': '😲',
+      'hey': '👋',
+      'lol': '😂',
+      'like': '❤️',
+      'congratulation': '🎉'
+    };
+
     $(function () {
       var socket = io();
       
       $('#send-button').click(function() {
-        var message = $('#input').val();
-        if (message.trim() !== '') {
+        var message = $('#input').val().trim();
+        var emojiReplacement = emojiMap[message.toLowerCase()];
+        
+        if (emojiReplacement) {
+          socket.emit('chat message', emojiReplacement);
+        } else {
           socket.emit('chat message', message);
-          $('#input').val('');
         }
+        
+        $('#input').val('');
       });
 
       socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
+        $('#messages').append($('<li>').html(msg));
       });
     });
   </script>
 </body>
 </html>
-
-
